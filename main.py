@@ -1,8 +1,6 @@
 from time import sleep
 
-import CommandGenerator
-import Communication
-from pynput import keyboard
+from FarmBot import FarmBot
 
 
 def on_press(key):
@@ -21,17 +19,12 @@ def on_press(key):
 
 
 if __name__ == '__main__':
-    command_bus = Communication.Communication("COM5")
+    farmbot = FarmBot("COM8")
+    farmbot.connect()
     print("Connected!")
-
-    command_generator = CommandGenerator.CommandGenerator()
     while True:
-
         sleep(0.01)
-        if command_bus.serial.inWaiting():
-            line = command_bus.serial.readline()
-            line = line.decode('ascii')
-            print(line)
+        farmbot.update_status()
     # Collect events until released
     with keyboard.Listener(on_press=on_press) as listener:
         listener.join()

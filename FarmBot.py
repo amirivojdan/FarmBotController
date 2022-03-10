@@ -25,7 +25,8 @@ class FarmBot:
         self.serial_bus.send(approval_command)
 
     def update_status(self):
-        raw_response = self.serial_bus.fetch_response()
-        if raw_response is not None:
-            print(raw_response)
-            self.status.update(raw_response)
+        raw_responses = self.serial_bus.fetch_responses()
+        if raw_responses is not None:
+            for item in raw_responses:
+                print(item)
+                #self.status.update(raw_responses)

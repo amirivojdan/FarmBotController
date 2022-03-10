@@ -18,7 +18,10 @@ class CommunicationBus:
         self.serial.baudrate = baudrate
         self.serial.bytesize = serial.EIGHTBITS
         self.serial.stopbits = serial.STOPBITS_ONE
-        self.serial.timeout = 100
+        self.serial.parity = serial.PARITY_NONE
+        self.serial.timeout = 0
+        self.encoding = 'ASCII'
+        self.crlf = '\r\n'
 
     def connect(self):
         self.serial.open()
@@ -26,11 +29,14 @@ class CommunicationBus:
     def disconnect(self):
         self.serial.close()
 
-    def send(self, data):
-        self.serial.write(data)
+    def send(self, data: str):
+        self.serial.write((data+self.crlf).encode(self.encoding))
 
-    def fetch_response(self):
+    def fetch_responses(self):
+        decoded_responses = []
         if self.serial.inWaiting():
-            response = self.serial.readline().decode('ascii')
-            return response
+            raw_responses = self.serial.readlines()
+            for item in raw_responses:
+                decoded_responses.append(item.decode(self.encoding))
+            return decoded_responses
         return None

@@ -20,6 +20,7 @@ class CommunicationBus:
         self.serial.stopbits = serial.STOPBITS_ONE
         self.serial.parity = serial.PARITY_NONE
         self.serial.timeout = 0
+        self.serial.set_buffer_size(rx_size=2147483647, tx_size=2147483647)  # Maximum buffer size
         self.encoding = 'ASCII'
         self.crlf = '\r\n'
 
@@ -30,7 +31,7 @@ class CommunicationBus:
         self.serial.close()
 
     def send(self, data: str):
-        self.serial.write((data+self.crlf).encode(self.encoding))
+        self.serial.write((data + self.crlf).encode(self.encoding))
 
     def fetch_responses(self):
         decoded_responses = []

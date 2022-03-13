@@ -1,9 +1,18 @@
-class FarmBotStatus:
+from threading import Thread
+from time import sleep
+
+from CommunicationBus import CommunicationBus
+
+
+class FarmBotStatus(Thread):
     """Receives the packets from the FarmBot and interpret them according to
      the table provided by the manufacturer in
      https://github.com/farmbot/farmbot-arduino-firmware#codes-received-from-the-arduino """
 
-    def __init__(self):
+    def __init__(self, reading_frequency, serial_bus: CommunicationBus):
+        Thread.__init__(self)
+        self.reading_update_interval = 1 / reading_frequency  # T=1/f
+        self.serial_bus = serial_bus
         self.x = 0
         self.y = 0
         self.z = 0
@@ -65,35 +74,23 @@ class FarmBotStatus:
         if response_chunks and (response_chunks[0] in self.reports_mapping):
             print(self.reports_mapping[response_chunks[0]])
 
-    def update(self, raw_response: str):
-        self.interpret(raw_response)
-        if raw_response.startswith("R00"):
-            self.is_idle = True
-            if self.is_idle and not self.is_initialized:
-                self.is_initialized = True
+    def update_internal_variables(self, raw_response: str):
+        # R00 is the idle status, R00 first seen considered as the initialized state
+        if raw_response.startswith("R00") and not self.is_initialized:
+            self.is_initialized = True
 
-        if raw_response.startswith("R01"):
-            self.command_started = True
-            self.command_completed = False
+    def update_status(self):
+        raw_responses = self.serial_bus.fetch_responses()
+        if raw_responses is not None:
+            for item in raw_responses:
+                self.interpret(item)
+                self.update_internal_variables(item)
 
-        if raw_response.startswith("R02"):
-            self.command_started = False
-            self.command_completed = True
+    def run(self):
+        if not self.serial_bus.serial.isOpen():
+            print("COM port in NOT open!")
+            return
 
-        if raw_response.startswith("R09"):
-            self.invalid_command = True
-
-        if raw_response.startswith("R71"):
-            self.x_axis_timeout = True
-
-        if raw_response.startswith("R72"):
-            self.y_axis_timeout = True
-
-        if raw_response.startswith("R73"):
-            self.z_axis_timeout = True
-
-        if raw_response.startswith("R87"):
-            self.emergency_lock = True
-
-        if raw_response.startswith("R88"):
-            self.no_config = True
+        while True:
+            self.update_status()
+            sleep(self.reading_update_interval)

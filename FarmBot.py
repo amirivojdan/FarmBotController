@@ -12,6 +12,7 @@ class FarmBot(Thread):
     def __init__(self, port, baud_rate=115200, command_update_frequency=100,
                  status_update_frequency=100, logging_enabled=True):
         Thread.__init__(self)
+        self.done = False
         self.serial_bus = CommunicationBus(port, baud_rate)
         self.status = FarmBotStatus(status_update_frequency, self.serial_bus)
         self.command_generator = CommandGenerator()
@@ -45,7 +46,11 @@ class FarmBot(Thread):
         print("Initializing Finished!")
         self.approve()
         print("Config Approved!")
-        while True:
-            sleep(self.command_update_interval)
-            self.move(1010, 1010, -201, 100, 100, 100)
+        i=0
+        j=0
+        while not self.done:
+            i+=100
+            j-=20
+            sleep(5)
+            self.move(i, j, 100, 1000, 1000, 1000)
 

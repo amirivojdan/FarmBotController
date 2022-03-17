@@ -11,6 +11,7 @@ class FarmBotStatus(Thread):
 
     def __init__(self, reading_frequency, serial_bus: CommunicationBus):
         Thread.__init__(self)
+        self.done = False
         self.reading_update_interval = 1 / reading_frequency  # T=1/f
         self.serial_bus = serial_bus
         self.x = 0
@@ -91,6 +92,6 @@ class FarmBotStatus(Thread):
             print("COM port in NOT open!")
             return
 
-        while True:
+        while not self.done:
             self.update_status()
             sleep(self.reading_update_interval)

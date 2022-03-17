@@ -13,6 +13,7 @@ class Extreme3dPro:
         print("Connected Joystick Model:{model}".format(model=self.controller.get_name()))
         self.number_of_axis = self.controller.get_numaxes()
         self.number_of_buttons = self.controller.get_numbuttons()
+        self.buttons_status = [False] *  self.number_of_buttons
         self.boundary_tolerance = 0.09
         self.decimal_points = 2
 
@@ -49,3 +50,6 @@ class Extreme3dPro:
         self.pitch = self.remove_boundary_tolerance(pitch_value, self.max_max_value) * self.pitch_axis_dir
         self.roll = self.remove_boundary_tolerance(roll_value, self.max_max_value) * self.roll_axis_dir
         self.yaw = self.remove_boundary_tolerance(yaw_value, self.max_max_value) * self.yaw_axis_dir
+
+        for i in range(self.number_of_buttons):
+            self.buttons_status[i] = self.controller.get_button(i)

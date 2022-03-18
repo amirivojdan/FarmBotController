@@ -5,6 +5,18 @@ from pygame.joystick import Joystick
 
 
 class Extreme3dPro:
+    # sample usage
+    # controller = Extreme3dPro()
+    # while True:
+    #     controller.update()
+    #     print("pitch:{pitch}  roll:{roll}  yaw:{yaw}".format(pitch=controller.pitch,
+    #                                                          roll=controller.roll,
+    #                                                          yaw=controller.yaw))
+    #     i = 0
+    #     for btn in controller.buttons_status:
+    #         print("{btn_i} : {btn}".format(btn_i=i, btn=btn))
+    #         i += 1
+    #     sleep(0.01)
 
     def __init__(self, joystick_id=0):
         pygame.init()
@@ -13,7 +25,7 @@ class Extreme3dPro:
         print("Connected Joystick Model:{model}".format(model=self.controller.get_name()))
         self.number_of_axis = self.controller.get_numaxes()
         self.number_of_buttons = self.controller.get_numbuttons()
-        self.buttons_status = [False] *  self.number_of_buttons
+        self.buttons_status = [False] * self.number_of_buttons
         self.boundary_tolerance = 0.09
         self.decimal_points = 2
 

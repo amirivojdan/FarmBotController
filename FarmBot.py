@@ -9,8 +9,8 @@ class FarmBot(Thread):
     """High-level python class to wrap all underlying details required to control
     the FarmBot."""
 
-    def __init__(self, port, baud_rate=115200, command_update_frequency=100,
-                 status_update_frequency=100, logging_enabled=True):
+    def __init__(self, port, baud_rate=115200, command_update_frequency=200,
+                 status_update_frequency=200, logging_enabled=True):
         Thread.__init__(self)
         self.done = False
         self.serial_bus = CommunicationBus(port, baud_rate)
@@ -45,12 +45,12 @@ class FarmBot(Thread):
             sleep(self.command_update_interval)
         print("Initializing Finished!")
         self.approve()
+        self.move(0, 0, 0, 1, 1, 1)
         print("Config Approved!")
-        i=0
-        j=0
+        i = 123
+        j = 456
+        z = 789
         while not self.done:
-            i+=100
-            j-=20
-            sleep(5)
-            self.move(i, j, 100, 1000, 1000, 1000)
+            sleep(self.command_update_interval)
+            self.move(i, j, z, 1, 1, 1)
 

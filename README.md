@@ -1,7 +1,7 @@
 # FarmBotController
  Python software to directly control FarmBot from PC.
  
-##	Project Objective and Solution
+##	Project Objective
 
 Due to the inconsistency of the connection over the internet, restrictions for research purposes, and the fact that existing libraries based on web services increases complexity of the software, implementing an independent software library to communicate and control the motors, sensors and other peripherals directly, seems inevitable.
 Accordingly, a Python software is developed for basic operations on Farmbot.

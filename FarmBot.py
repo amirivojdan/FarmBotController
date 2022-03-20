@@ -3,6 +3,7 @@ from time import sleep
 from CommandGenerator import CommandGenerator
 from CommunicationBus import CommunicationBus
 from FarmBotStatus import FarmBotStatus
+import logging
 
 
 class FarmBot(Thread):
@@ -19,11 +20,11 @@ class FarmBot(Thread):
         self.command_update_interval = 1/command_update_frequency  # T=1/f
 
     def connect(self):
-        print("Connected!")
+        logging.debug("Connected!")
         self.serial_bus.connect()
 
     def disconnect(self):
-        print("Disconnected!")
+        logging.debug("Disconnected!")
         self.serial_bus.disconnect()
 
     def approve(self):
@@ -37,20 +38,21 @@ class FarmBot(Thread):
 
     def run(self):
         if not self.serial_bus.serial.isOpen():
-            print("COM port in NOT open!")
+            logging.debug("COM port in NOT open!")
             return
         self.status.start()
-        print("Initializing...")
+        logging.debug("Initializing...")
+
         while not self.status.is_initialized:
             sleep(self.command_update_interval)
-        print("Initializing Finished!")
+        logging.debug("Initializing Finished!")
         self.approve()
         self.move(0, 0, 0, 1, 1, 1)
-        print("Config Approved!")
+        logging.debug("Config Approved!")
         i = 123
         j = 456
         z = 789
         while not self.done:
             sleep(self.command_update_interval)
-            self.move(i, j, z, 1, 1, 1)
+            self.move(i, j, z, 1000, 1000, 1000)
 

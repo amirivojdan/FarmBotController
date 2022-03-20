@@ -4,16 +4,16 @@ class CommandGenerator:
     https://github.com/farmbot/farmbot-arduino-firmware#codes-sent-to-the-arduino """
 
     def __init__(self, queue_number: str = 'Q0'):
-        self.queue_number = ' '+queue_number
+        self.queue_number = ' ' + queue_number
 
     def approve(self):
         return 'F22 P2 V1' + self.queue_number
 
     def move(self, x, y, z, x_speed, y_speed, z_speed):
         return 'G00 X{x} Y{y} Z{z} A{x_speed} B{y_speed} C{z_speed}'.format(x=x, y=y, z=z,
-                                                                               x_speed=x_speed,
-                                                                               y_speed=y_speed,
-                                                                               z_speed=z_speed) + self.queue_number
+                                                                            x_speed=x_speed,
+                                                                            y_speed=y_speed,
+                                                                            z_speed=z_speed) + self.queue_number
 
     def move_home_all(self):
         return 'G28' + self.queue_number

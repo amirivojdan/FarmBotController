@@ -1,3 +1,4 @@
+import logging
 from threading import Thread
 from time import sleep
 
@@ -92,16 +93,16 @@ class FarmBotStatus(Thread):
         if raw_responses is not None:
             for raw_response in raw_responses:
                 self.update_internal_variables(raw_response)
-                # print(raw_response)
+                logging.debug(raw_response)
                 response_chunks = raw_response.split()
                 parameters = self.interpret(response_chunks)
                 if parameters:
                     for key in parameters:
-                        print("{key}={value}".format(key=key, value=parameters[key]))
+                        logging.info("{key}={value}".format(key=key, value=parameters[key]))
 
     def run(self):
         if not self.serial_bus.serial.isOpen():
-            print("COM port in NOT open!")
+            logging.debug("COM port in NOT open!")
             return
 
         while not self.done:

@@ -1,11 +1,10 @@
-from time import sleep
-
-from Extreme3dPro import Extreme3dPro
+import logging
 from FarmBot import FarmBot
+logging.basicConfig(level=logging.INFO)
 
 if __name__ == '__main__':
     farmbot = FarmBot("COM8")
     farmbot.connect()
     farmbot.start()
 
-    print("Well Done!")
+    logging.debug("Well Done!")

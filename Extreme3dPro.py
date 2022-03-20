@@ -1,3 +1,4 @@
+import logging
 import math
 
 import pygame
@@ -22,7 +23,7 @@ class Extreme3dPro:
         pygame.init()
         pygame.joystick.init()
         self.controller = Joystick(joystick_id)
-        print("Connected Joystick Model:{model}".format(model=self.controller.get_name()))
+        logging.debug("Connected Joystick Model:{model}".format(model=self.controller.get_name()))
         self.number_of_axis = self.controller.get_numaxes()
         self.number_of_buttons = self.controller.get_numbuttons()
         self.buttons_status = [False] * self.number_of_buttons

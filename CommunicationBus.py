@@ -1,3 +1,5 @@
+import logging
+
 import serial
 import serial.tools.list_ports
 
@@ -38,6 +40,9 @@ class CommunicationBus:
         if self.serial.inWaiting():
             raw_responses = self.serial.readlines()
             for item in raw_responses:
-                decoded_responses.append(item.decode(self.encoding))
+                try:
+                    decoded_responses.append(item.decode(self.encoding))
+                except UnicodeDecodeError:
+                    logging.exception(self.encoding + " DECODE ERROR!!!")
             return decoded_responses
         return None

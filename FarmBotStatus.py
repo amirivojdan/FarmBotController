@@ -15,9 +15,19 @@ class FarmBotStatus(Thread):
         self.done = False
         self.reading_update_interval = 1 / reading_frequency  # T=1/f
         self.serial_bus = serial_bus
+
         self.x = 0
         self.y = 0
         self.z = 0
+
+        self.x_encoder_raw = 0
+        self.y_encoder_raw = 0
+        self.z_encoder_raw = 0
+
+        self.x_encoder_scaled = 0
+        self.y_encoder_scaled = 0
+        self.z_encoder_scaled = 0
+
         self.logging_enabled = False
         self.is_idle = False
         self.is_initialized = False
@@ -76,26 +86,43 @@ class FarmBotStatus(Thread):
         params = {}
         if response_chunks and (response_chunks[0] in self.reports_mapping):
             for i in range(1, len(response_chunks) - 1):
-                parameter_value = ''.join(j for j in response_chunks[i] if (j.isdigit() or j == '.'))
+                parameter_value = ''.join(j for j in response_chunks[i] if (j.isdigit() or j == '.' or j == '-'))
                 if parameter_value:
-                    parameter_key = ''.join(j for j in response_chunks[i] if j.isalpha())
+                    parameter_key = ''.join(j for j in response_chunks[i] if (j.isalpha() and j != '-'))
                     params[parameter_key] = float(parameter_value)
             return params
         return None
 
-    def update_internal_variables(self, raw_response: str):
+    def update_internal_variables(self, response_chunks: list[str], parameters: dict):
         # R00 is the idle status, R00 first seen considered as the initialized state
-        if raw_response.startswith("R00") and not self.is_initialized:
-            self.is_initialized = True
+        if response_chunks and (response_chunks[0] in self.reports_mapping):
+            if "R00" in response_chunks[0] and not self.is_initialized:
+                self.is_initialized = True
+
+            if "R82" in response_chunks[0] and len(parameters) == 3:
+                self.x = parameters["X"]
+                self.y = parameters["Y"]
+                self.z = parameters["Z"]
+
+            if "R84" in response_chunks[0] and len(parameters) == 3:
+                self.x_encoder_scaled = parameters["X"]
+                self.y_encoder_scaled = parameters["Y"]
+                self.z_encoder_scaled = parameters["Z"]
+
+            if "R85" in response_chunks[0] and len(parameters) == 3:
+                self.x_encoder_raw = parameters["X"]
+                self.y_encoder_raw = parameters["Y"]
+                self.z_encoder_raw = parameters["Z"]
 
     def update_status(self):
         raw_responses = self.serial_bus.fetch_responses()
         if raw_responses is not None:
             for raw_response in raw_responses:
-                self.update_internal_variables(raw_response)
+
                 logging.debug(raw_response)
                 response_chunks = raw_response.split()
                 parameters = self.interpret(response_chunks)
+                self.update_internal_variables(response_chunks, parameters)
                 if parameters:
                     for key in parameters:
                         logging.info("{key}={value}".format(key=key, value=parameters[key]))

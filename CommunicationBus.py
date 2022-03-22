@@ -1,5 +1,4 @@
 import logging
-
 import serial
 import serial.tools.list_ports
 
@@ -9,7 +8,8 @@ def enumerate_ports():
      (to be used in the start menu & automatic connection)"""
     ports = serial.tools.list_ports.comports()
     for port, desc, hwid in sorted(ports):
-        print("{}: {} [{}]".format(port, desc, hwid))
+        logging.info("{}: {} [{}]".format(port, desc, hwid))
+    return ports
 
 
 class CommunicationBus:

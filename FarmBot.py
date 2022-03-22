@@ -1,6 +1,6 @@
 from threading import Thread
 from time import sleep
-from CommunicationBus import CommunicationBus
+from CommunicationBus import CommunicationBus, enumerate_ports
 from FarmBotStatus import FarmBotStatus
 import logging
 
@@ -9,10 +9,19 @@ class FarmBot(Thread):
     """High-level python class to wrap all underlying details required to control
     the FarmBot."""
 
-    def __init__(self, port, baud_rate=115200, command_update_frequency=200,
-                 status_update_frequency=200, logging_enabled=True):
+    def __init__(self, port=None, baud_rate=115200, command_update_frequency=200,
+                 status_update_frequency=200):
         Thread.__init__(self)
-        self.done = False
+        if not port:
+            for available_port, desc, hwid in sorted(enumerate_ports()):
+                if "Arduino Mega 2560" in desc:
+                    if port:
+                        logging.error("MORE THAN ONE ARDUINO COM PORT AVAILABLE!!!")
+                        raise Exception("More than one Arduino COM port available."
+                                        " Please explicitly define COM port "
+                                        "in FarmBot constructor!")
+                    port = available_port
+
         self.serial_bus = CommunicationBus(port, baud_rate)
         self.status = FarmBotStatus(status_update_frequency, self.serial_bus)
         self.command_update_interval = 1 / command_update_frequency  # T=1/f
@@ -160,11 +169,11 @@ class FarmBot(Thread):
             sleep(self.command_update_interval)
         logging.debug("Initializing Finished!")
         self.approve()
-        self.move(0, 0, 0)
+
         logging.debug("Config Approved!")
         i = 100
         j = 100
         z = 100
-        while not self.done:
-            sleep(self.command_update_interval)
-            self.move(i, j, z)
+
+        sleep(5)
+        self.move(-200, 0, 0)

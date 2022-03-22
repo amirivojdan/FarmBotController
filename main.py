@@ -5,7 +5,7 @@ from tkinter import ttk
 
 from FarmBotGUI import FarmBotGUI
 
-logging.basicConfig(level=logging.ERROR)
+logging.basicConfig(level=logging.INFO)
 
 if __name__ == '__main__':
     farmbot = FarmBot()

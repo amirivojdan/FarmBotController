@@ -10,7 +10,7 @@ It is contained of four python classes as follows:
 
 -	**CommandBus.py**  
 This class is responsible for providing a full-duplex serial connection based on  PySerial module. It helps to hide all details about the serial connection configurations, encodings(ASCII)/decodings(ASCII), and the required CR+LF special characters needed for proper data transmition.
--	**CommandGenerator.py**  
+-	~~**CommandGenerator.py**~~  (It is amalgamated with FramBot class to avoid duplicate function interfacing)
 Because writing G-Code commands in plain text format is not only time-consuming but also a bug prone process, Command Generator class is defined to perform all those details behind the seen. It provides corresponding clean and intuitive methods for each of the commands available in G-Code table provided by the manufacturer.
 -	**FarmBotStatus.py**  
 This class is responsible for fetching the raw packets from the CommandBus object and interepet them according to the documents available on manufacturer’s Github. The last position of the motors and internal variables are also available and updated by a thread running in specific frequency provided in its constructor. 
